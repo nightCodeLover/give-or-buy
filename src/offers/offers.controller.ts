@@ -3,15 +3,17 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
+  ParseIntPipe,
+  UseInterceptors,
 } from '@nestjs/common';
 import { OffersService } from './offers.service.js';
 import { CreateOfferDto } from './dto/create-offer.dto.js';
-import { UpdateOfferDto } from './dto/update-offer.dto.js';
+import { CacheInterceptor, CacheKey } from '@nestjs/cache-manager';
+import { GET_CACHE_NAME } from './constants.ts';
 
 @Controller('offers')
+@UseInterceptors(CacheInterceptor)
 export class OffersController {
   constructor(private readonly offersService: OffersService) {}
 
@@ -20,23 +22,14 @@ export class OffersController {
     return this.offersService.create(createOfferDto);
   }
 
+  @CacheKey(GET_CACHE_NAME)
   @Get()
   findAll() {
     return this.offersService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.offersService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOfferDto: UpdateOfferDto) {
-    return this.offersService.update(+id, updateOfferDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.offersService.remove(+id);
+  findOne(@Param('id', ParseIntPipe) id: string) {
+    return this.offersService.findOne(Number(id));
   }
 }

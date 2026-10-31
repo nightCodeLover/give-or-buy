@@ -11,6 +11,14 @@ import { Offer } from './offers/entities/offer.entity.ts';
 import { User } from './users/entities/user.entity.ts';
 import { Wish } from './wishes/entities/wish.entity.ts';
 import { Wishlist } from './wishlists/entities/wishlist.entity.ts';
+import { CacheModule } from '@nestjs/cache-manager';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { HashModule } from './hash/hash.module.js';
+import { AuthModule } from './auth/auth.module.js';
+
+export const CACHE_LIFE_TIME = 24 * 3600;
+const REQ_LIMIT = 100;
+const TIME_FOR_REQUESTS = 10_000;
 
 @Module({
   imports: [
@@ -29,10 +37,16 @@ import { Wishlist } from './wishlists/entities/wishlist.entity.ts';
         entities: [Offer, User, Wish, Wishlist],
       }),
     }),
+    CacheModule.register({ isGlobal: true, ttl: CACHE_LIFE_TIME }),
+    ThrottlerModule.forRoot({
+      throttlers: [{ ttl: TIME_FOR_REQUESTS, limit: REQ_LIMIT }],
+    }),
     UsersModule,
     WishesModule,
     WishlistsModule,
     OffersModule,
+    AuthModule,
+    HashModule,
   ],
   controllers: [AppController],
   providers: [AppService],

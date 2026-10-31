@@ -9,6 +9,7 @@ import {
 import { User } from '../../users/entities/user.entity.ts';
 import { STRING_NUMBER_TRANSFORMER } from '../../utils.ts';
 import { Wish } from '../../wishes/entities/wish.entity.ts';
+import { IsBoolean, IsNumber, IsOptional, IsPositive } from 'class-validator';
 
 @Entity()
 export class Offer {
@@ -33,8 +34,12 @@ export class Offer {
     scale: 2,
     transformer: STRING_NUMBER_TRANSFORMER,
   })
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @IsPositive()
   amount: number;
 
   @Column({ default: false })
+  @IsBoolean()
+  @IsOptional()
   hidden?: boolean;
 }

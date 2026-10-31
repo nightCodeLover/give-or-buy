@@ -5,15 +5,19 @@ import { User } from './entities/user.entity.ts';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserNotFoundException } from './exceptions.ts';
+import { HashService } from '../hash/hash.service.ts';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
+    private readonly hashService: HashService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    return this.userRepository.save(createUserDto);
+    const hashedPas = await this.hashService.getHash(createUserDto.password);
+
+    return this.userRepository.save({ ...createUserDto, password: hashedPas });
   }
 
   async findAll() {
@@ -22,6 +26,16 @@ export class UsersService {
 
   async findOne(id: number): Promise<User> {
     const user = await this.userRepository.findOneBy({ id });
+
+    if (user === null) {
+      throw new UserNotFoundException();
+    }
+
+    return user;
+  }
+
+  async findOneByEmail(email: string): Promise<User> {
+    const user = await this.userRepository.findOneBy({ email });
 
     if (user === null) {
       throw new UserNotFoundException();
