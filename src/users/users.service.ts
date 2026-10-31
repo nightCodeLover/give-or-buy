@@ -20,12 +20,12 @@ export class UsersService {
     return this.userRepository.save({ ...createUserDto, password: hashedPas });
   }
 
-  async findAll() {
-    return this.userRepository.find();
+  async findAll(query: FindOptionsWhere<User>) {
+    return this.userRepository.findBy(query);
   }
 
-  async findOne(param: FindOptionsWhere<User>): Promise<User> {
-    const user = await this.userRepository.findOneBy(param);
+  async findOne(query: FindOptionsWhere<User>): Promise<User> {
+    const user = await this.userRepository.findOneBy(query);
 
     if (user === null) {
       throw new UserNotFoundException();
@@ -34,14 +34,14 @@ export class UsersService {
     return user;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
-    await this.findOne({ id });
+  async update(query: FindOptionsWhere<User>, updateUserDto: UpdateUserDto) {
+    const user = await this.findOne(query);
 
-    return this.userRepository.update(id, updateUserDto);
+    return this.userRepository.update(user.id, updateUserDto);
   }
 
-  async remove(id: number) {
-    const userToDelete = await this.findOne({ id });
+  async remove(query: FindOptionsWhere<User>) {
+    const userToDelete = await this.findOne(query);
 
     await this.userRepository.remove(userToDelete);
 
