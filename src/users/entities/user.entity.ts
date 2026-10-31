@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { IsEmail, IsUrl, Length } from 'class-validator';
+import { IsEmail, IsOptional, IsString, IsUrl, Length } from 'class-validator';
 import { Wish } from '../../wishes/entities/wish.entity.ts';
 import { Offer } from '../../offers/entities/offer.entity.ts';
 import { Wishlist } from '../../wishlists/entities/wishlist.entity.ts';
@@ -31,10 +31,12 @@ export class User {
 
   @Column({ default: ABOUT_DEFAULT_VALUE })
   @Length(2, 200)
+  @IsOptional()
   about?: string;
 
   @Column({ default: AVATAR_DEFAULT_VALUE })
   @IsUrl()
+  @IsOptional()
   avatar?: string;
 
   @Column({ unique: true })
@@ -42,14 +44,18 @@ export class User {
   email: string;
 
   @Column()
+  @IsString()
   password: string;
 
   @OneToMany(() => Wish, (wish) => wish.owner)
+  @IsOptional()
   wishes: Wish[];
 
   @OneToMany(() => Offer, (offer) => offer.user)
+  @IsOptional()
   offers: Offer[];
 
   @OneToMany(() => Wishlist, (wishlist) => wishlist.owner)
+  @IsOptional()
   wishlists: Wishlist[];
 }

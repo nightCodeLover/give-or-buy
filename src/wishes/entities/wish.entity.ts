@@ -9,7 +9,7 @@ import {
   UpdateDateColumn,
   type Relation,
 } from 'typeorm';
-import { IsUrl, Length } from 'class-validator';
+import { IsOptional, IsUrl, Length } from 'class-validator';
 import { STRING_NUMBER_TRANSFORMER } from '../../utils.ts';
 import { Offer } from '../../offers/entities/offer.entity.ts';
 import { User } from '../../users/entities/user.entity.ts';

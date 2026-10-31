@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { User } from './entities/user.entity.ts';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserNotFoundException } from './exceptions.ts';
 import { HashService } from '../hash/hash.service.ts';
@@ -24,18 +24,8 @@ export class UsersService {
     return this.userRepository.find();
   }
 
-  async findOne(id: number): Promise<User> {
-    const user = await this.userRepository.findOneBy({ id });
-
-    if (user === null) {
-      throw new UserNotFoundException();
-    }
-
-    return user;
-  }
-
-  async findOneByEmail(email: string): Promise<User> {
-    const user = await this.userRepository.findOneBy({ email });
+  async findOne(param: FindOptionsWhere<User>): Promise<User> {
+    const user = await this.userRepository.findOneBy(param);
 
     if (user === null) {
       throw new UserNotFoundException();
@@ -45,13 +35,13 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    await this.findOne(id);
+    await this.findOne({ id });
 
     return this.userRepository.update(id, updateUserDto);
   }
 
   async remove(id: number) {
-    const userToDelete = await this.findOne(id);
+    const userToDelete = await this.findOne({ id });
 
     await this.userRepository.remove(userToDelete);
 
