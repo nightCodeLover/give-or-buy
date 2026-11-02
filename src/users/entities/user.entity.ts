@@ -25,12 +25,12 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column()
+  @Column({ unique: true })
   @Length(2, 30)
   username: string;
 
   @Column({ default: ABOUT_DEFAULT_VALUE })
-  @Length(2, 200)
+  @Length(0, 200)
   @IsOptional()
   about?: string;
 
@@ -43,7 +43,7 @@ export class User {
   @IsEmail()
   email: string;
 
-  @Column()
+  @Column({ select: false })
   @IsString()
   password: string;
 

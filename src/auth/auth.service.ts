@@ -18,8 +18,8 @@ export class AuthService {
     return { access_token: this.jwtService.sign(jwtPayload) };
   }
 
-  public async validatePassword(email: string, password: string) {
-    const user = await this.userService.findOne({ email });
+  public async validatePassword(username: string, password: string) {
+    const user = await this.userService.findOneWithPassword({ username });
 
     const isCorrectPassword = await this.hashService.compareHash(
       user.password,
@@ -30,6 +30,6 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    return user;
+    return { ...user, password: undefined };
   }
 }

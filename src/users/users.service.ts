@@ -20,7 +20,7 @@ export class UsersService {
     return this.userRepository.save({ ...createUserDto, password: hashedPas });
   }
 
-  async findAll(query: FindOptionsWhere<User>) {
+  async findMany(query: FindOptionsWhere<User> | FindOptionsWhere<User>[]) {
     return this.userRepository.findBy(query);
   }
 
@@ -34,10 +34,29 @@ export class UsersService {
     return user;
   }
 
+  async findOneWithPassword(query: FindOptionsWhere<User>) {
+    const user = await this.userRepository.findOne({
+      where: query,
+      select: { password: true, id: true },
+    });
+
+    if (user === null) {
+      throw new UserNotFoundException();
+    }
+
+    return user;
+  }
+
   async update(query: FindOptionsWhere<User>, updateUserDto: UpdateUserDto) {
     const user = await this.findOne(query);
 
-    return this.userRepository.update(user.id, updateUserDto);
+    if (Object.keys(updateUserDto).length === 0) {
+      return user;
+    }
+
+    await this.userRepository.update(user.id, updateUserDto);
+
+    return this.findOne(query);
   }
 
   async remove(query: FindOptionsWhere<User>) {

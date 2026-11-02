@@ -5,38 +5,71 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service.js';
-import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
+import type { RequestWithUser } from '../auth/types.ts';
+import { HashService } from '../hash/hash.service.ts';
+import { JwtGuard } from '../auth/guards/jwt.guard.ts';
+import { FindUserDto } from './dto/find-user.dto.ts';
 
+@UseGuards(JwtGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly hashService: HashService,
+  ) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  @Get('me')
+  findMe(@Req() request: RequestWithUser) {
+    const { id } = request.user;
+
+    return this.usersService.findOne({ id });
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll({});
+  @Patch('me')
+  async updateMe(
+    @Req() request: RequestWithUser,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    const { id } = request.user;
+
+    if (updateUserDto.password) {
+      const hashedPass = await this.hashService.getHash(updateUserDto.password);
+
+      return this.usersService.update(
+        { id },
+        { ...updateUserDto, password: hashedPass },
+      );
+    }
+
+    return this.usersService.update({ id }, updateUserDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne({ id: Number(id) });
+  @Get('me/wishes')
+  findWishes(@Req() request: RequestWithUser) {
+    const { id } = request.user;
+
+    // Запросить подарки отдельно из wishesService
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update({ id: Number(id) }, updateUserDto);
+  @Get(':username')
+  findByUsername(@Param('username') username: string) {
+    return this.usersService.findOne({ username });
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove({ id: Number(id) });
+  @Get(':username/wishes')
+  findWishesByUsername(@Param('username') username: string) {
+    // Запросить подарки отдельно из wishesService
+  }
+
+  @Post('find')
+  findByQuery(@Body() queryObj: FindUserDto) {
+    const { query } = queryObj;
+
+    return this.usersService.findMany([{ email: query }, { username: query }]);
   }
 }

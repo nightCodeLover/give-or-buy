@@ -5,7 +5,7 @@ import { UsersService } from '../users/users.service.ts';
 import type { RequestWithUser } from './types.ts';
 import { CreateUserDto } from '../users/dto/create-user.dto.ts';
 
-@Controller('auth')
+@Controller('')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
@@ -22,6 +22,8 @@ export class AuthController {
   async signUp(@Body() body: CreateUserDto) {
     const user = await this.usersService.create(body);
 
-    return this.authService.auth(user);
+    this.authService.auth(user);
+
+    return user;
   }
 }

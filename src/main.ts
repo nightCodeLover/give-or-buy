@@ -17,6 +17,8 @@ async function bootstrap() {
 
   app.use(nestCsrf());
 
+  app.enableCors({ origin: process.env.FRONT_URL, credentials: true });
+
   await app.listen(process.env.PORT ?? 3000);
 }
 await bootstrap();

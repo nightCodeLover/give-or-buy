@@ -3,7 +3,7 @@ import { CreateWishDto } from './dto/create-wish.dto.js';
 import { UpdateWishDto } from './dto/update-wish.dto.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wish } from './entities/wish.entity.ts';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { WishNotFoundException } from './exceptions.ts';
 
 @Injectable()
@@ -16,12 +16,12 @@ export class WishesService {
     return this.wishRepository.save(createWishDto);
   }
 
-  async findAll() {
-    return this.wishRepository.find();
+  async findAll(query: FindOptionsWhere<Wish>) {
+    return this.wishRepository.findBy(query);
   }
 
-  async findOne(id: number) {
-    const wish = await this.wishRepository.findOneBy({ id });
+  async findOne(query: FindOptionsWhere<Wish>) {
+    const wish = await this.wishRepository.findOneBy(query);
 
     if (wish === null) {
       throw new WishNotFoundException();
@@ -30,14 +30,14 @@ export class WishesService {
     return wish;
   }
 
-  async update(id: number, updateWishDto: UpdateWishDto) {
-    await this.findOne(id);
+  async update(query: FindOptionsWhere<Wish>, updateWishDto: UpdateWishDto) {
+    const wish = await this.findOne(query);
 
-    return this.wishRepository.update(id, updateWishDto);
+    return this.wishRepository.update(wish.id, updateWishDto);
   }
 
-  async remove(id: number) {
-    const wishToDelete = await this.findOne(id);
+  async remove(query: FindOptionsWhere<Wish>) {
+    const wishToDelete = await this.findOne(query);
 
     await this.wishRepository.remove(wishToDelete);
 
