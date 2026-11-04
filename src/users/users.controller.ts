@@ -7,6 +7,7 @@ import {
   Param,
   Req,
   UseGuards,
+  SerializeOptions,
 } from '@nestjs/common';
 import { UsersService } from './users.service.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
@@ -23,6 +24,7 @@ export class UsersController {
     private readonly hashService: HashService,
   ) {}
 
+  @SerializeOptions({ groups: ['me'] })
   @Get('me')
   findMe(@Req() request: RequestWithUser) {
     const { id } = request.user;
@@ -30,6 +32,7 @@ export class UsersController {
     return this.usersService.findOne({ id });
   }
 
+  @SerializeOptions({ groups: ['me'] })
   @Patch('me')
   async updateMe(
     @Req() request: RequestWithUser,
@@ -40,13 +43,15 @@ export class UsersController {
     if (updateUserDto.password) {
       const hashedPass = await this.hashService.getHash(updateUserDto.password);
 
-      return this.usersService.update(
+      await this.usersService.update(
         { id },
         { ...updateUserDto, password: hashedPass },
       );
+    } else {
+      await this.usersService.update({ id }, updateUserDto);
     }
 
-    return this.usersService.update({ id }, updateUserDto);
+    return this.usersService.findOne({ id });
   }
 
   @Get('me/wishes')

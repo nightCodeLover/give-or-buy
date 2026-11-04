@@ -10,6 +10,7 @@ import { IsEmail, IsOptional, IsString, IsUrl, Length } from 'class-validator';
 import { Wish } from '../../wishes/entities/wish.entity.ts';
 import { Offer } from '../../offers/entities/offer.entity.ts';
 import { Wishlist } from '../../wishlists/entities/wishlist.entity.ts';
+import { Exclude, Expose } from 'class-transformer';
 
 const ABOUT_DEFAULT_VALUE = 'Пока ничего не рассказал о себе';
 const AVATAR_DEFAULT_VALUE = 'https://i.pravatar.cc/300';
@@ -41,10 +42,13 @@ export class User {
 
   @Column({ unique: true })
   @IsEmail()
+  @Expose({ groups: ['me'] })
   email: string;
 
   @Column({ select: false })
   @IsString()
+  @Length(2)
+  @Exclude()
   password: string;
 
   @OneToMany(() => Wish, (wish) => wish.owner)

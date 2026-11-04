@@ -9,7 +9,7 @@ import {
   UpdateDateColumn,
   type Relation,
 } from 'typeorm';
-import { IsOptional, IsUrl, Length } from 'class-validator';
+import { IsNumber, IsOptional, IsUrl, Length } from 'class-validator';
 import { STRING_NUMBER_TRANSFORMER } from '../../utils.ts';
 import { Offer } from '../../offers/entities/offer.entity.ts';
 import { User } from '../../users/entities/user.entity.ts';
@@ -44,6 +44,7 @@ export class Wish {
     scale: 2,
     transformer: STRING_NUMBER_TRANSFORMER,
   })
+  @IsNumber()
   price: number;
 
   @Column({
@@ -51,18 +52,19 @@ export class Wish {
     precision: 10,
     scale: 2,
     transformer: STRING_NUMBER_TRANSFORMER,
+    default: 0,
   })
   raised: number;
-
-  @ManyToOne(() => User, (user) => user.wishes)
-  owner: Relation<User>;
 
   @Column()
   @Length(1, 1024)
   description: string;
 
-  @Column()
+  @Column({ default: 0 })
   copied: number;
+
+  @ManyToOne(() => User, (user) => user.wishes)
+  owner: Relation<User>;
 
   @OneToMany(() => Offer, (offer) => offer.item)
   offers: Offer[];

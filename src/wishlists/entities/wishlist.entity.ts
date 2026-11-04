@@ -9,7 +9,7 @@ import {
   UpdateDateColumn,
   type Relation,
 } from 'typeorm';
-import { Length } from 'class-validator';
+import { IsUrl, Length } from 'class-validator';
 import { User } from '../../users/entities/user.entity.ts';
 import { Wish } from '../../wishes/entities/wish.entity.ts';
 
@@ -25,14 +25,11 @@ export class Wishlist {
   updatedAt: Date;
 
   @Column()
-  @Length(1, 250)
+  @Length(0, 250)
   name: string;
 
   @Column()
-  @Length(0, 1500)
-  description: string;
-
-  @Column()
+  @IsUrl()
   image: string;
 
   @ManyToMany(() => Wish, (wish) => wish.wishlists)

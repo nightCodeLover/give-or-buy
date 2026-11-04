@@ -5,34 +5,43 @@ import {
   Body,
   Param,
   ParseIntPipe,
-  UseInterceptors,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { OffersService } from './offers.service.js';
 import { CreateOfferDto } from './dto/create-offer.dto.js';
-import { CacheInterceptor, CacheKey } from '@nestjs/cache-manager';
-import { GET_CACHE_NAME } from './constants.ts';
 import { JwtGuard } from '../auth/guards/jwt.guard.ts';
+import type { RequestWithUser } from '../auth/types.ts';
 
 @UseGuards(JwtGuard)
 @Controller('offers')
-@UseInterceptors(CacheInterceptor)
 export class OffersController {
   constructor(private readonly offersService: OffersService) {}
 
   @Post()
-  create(@Body() createOfferDto: CreateOfferDto) {
-    return this.offersService.create(createOfferDto);
+  create(
+    @Body() createOfferDto: CreateOfferDto,
+    @Req() request: RequestWithUser,
+  ) {
+    return this.offersService.create({
+      createOfferDto,
+      currentUser: request.user,
+    });
   }
 
-  @CacheKey(GET_CACHE_NAME)
   @Get()
   findAll() {
-    return this.offersService.findAll({});
+    return this.offersService.findAll({
+      relations: { user: true, item: true },
+      query: { hidden: false },
+    });
   }
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: string) {
-    return this.offersService.findOne({ id: Number(id) });
+    return this.offersService.findOne({
+      query: { id: Number(id), hidden: false },
+      relations: { user: true, item: true },
+    });
   }
 }

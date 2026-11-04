@@ -58,12 +58,4 @@ export class UsersService {
 
     return this.findOne(query);
   }
-
-  async remove(query: FindOptionsWhere<User>) {
-    const userToDelete = await this.findOne(query);
-
-    await this.userRepository.remove(userToDelete);
-
-    return userToDelete;
-  }
 }
