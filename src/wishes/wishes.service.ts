@@ -28,6 +28,10 @@ export class WishesService {
     return this.wishRepository.save(createWishDto);
   }
 
+  findAll(query: FindOptionsWhere<Wish> | FindOptionsWhere<Wish>[]) {
+    return this.wishRepository.findBy(query);
+  }
+
   findFirstMany({
     order,
     take,
