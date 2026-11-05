@@ -2,19 +2,19 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 export class WishNotFoundException extends NotFoundException {
   constructor() {
-    super('Wish not found');
+    super('Gift not found');
   }
 }
 
 export class CopySameSelfWishException extends BadRequestException {
   constructor() {
-    super('You cant copy your wish');
+    super('You cant copy your gift');
   }
 }
 
 export class UpdateWishNotOwnException extends BadRequestException {
   constructor() {
-    super('You cant update not your wish');
+    super('You cant update not your gift');
   }
 }
 
@@ -26,7 +26,13 @@ export class UpdateWishWithOfferException extends BadRequestException {
 
 export class DeleteNotOwnWishException extends BadRequestException {
   constructor() {
-    super('You cant delete not your wish');
+    super('You cant delete not your gift');
+  }
+}
+
+export class DeleteWishWithOffersException extends BadRequestException {
+  constructor() {
+    super('You cant delete gift with offers');
   }
 }
 

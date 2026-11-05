@@ -12,6 +12,7 @@ import {
 import {
   AmountRaisedException,
   DeleteNotOwnWishException,
+  DeleteWishWithOffersException,
   HighAmountException,
   UpdateWishNotOwnException,
   UpdateWishWithOfferException,
@@ -90,6 +91,10 @@ export class WishesService {
 
     if (wishToDelete.owner.id !== currentUserId) {
       throw new DeleteNotOwnWishException();
+    }
+
+    if (wishToDelete.raised !== 0) {
+      throw new DeleteWishWithOffersException();
     }
 
     await this.wishRepository.remove(wishToDelete);

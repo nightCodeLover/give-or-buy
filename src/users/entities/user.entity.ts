@@ -42,7 +42,7 @@ export class User {
 
   @Column({ unique: true })
   @IsEmail()
-  @Expose({ groups: ['me'] })
+  @Expose({ groups: ['me', 'signup', 'find'] })
   email: string;
 
   @Column({ select: false })

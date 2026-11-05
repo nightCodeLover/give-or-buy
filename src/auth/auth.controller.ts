@@ -1,4 +1,11 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Req,
+  SerializeOptions,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service.js';
 import { LocalGuard } from './guards/local.guard.ts';
 import { UsersService } from '../users/users.service.ts';
@@ -18,12 +25,13 @@ export class AuthController {
     return this.authService.auth(request.user);
   }
 
+  @SerializeOptions({ groups: ['signup'] })
   @Post('signup')
   async signUp(@Body() body: CreateUserDto) {
     const user = await this.usersService.create(body);
 
     this.authService.auth(user);
 
-    return user;
+    return this.usersService.findOne({ id: user.id });
   }
 }

@@ -16,16 +16,16 @@ import { UpdateWishlistDto } from './dto/update-wishlist.dto.js';
 import { JwtGuard } from '../auth/guards/jwt.guard.ts';
 import type { RequestWithUser } from '../auth/types.ts';
 
-@UseGuards(JwtGuard)
 @Controller('wishlistlists')
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
   @Get()
   findAll() {
-    return this.wishlistsService.findAll({});
+    return this.wishlistsService.findAll({}, { owner: true, items: true });
   }
 
+  @UseGuards(JwtGuard)
   @Post()
   create(
     @Body() createWishlistDto: CreateWishlistDto,
@@ -39,9 +39,13 @@ export class WishlistsController {
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: string) {
-    return this.wishlistsService.findOne({ id: Number(id) });
+    return this.wishlistsService.findOne(
+      { id: Number(id) },
+      { owner: true, items: true },
+    );
   }
 
+  @UseGuards(JwtGuard)
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: string,
@@ -55,6 +59,7 @@ export class WishlistsController {
     });
   }
 
+  @UseGuards(JwtGuard)
   @Delete(':id')
   remove(
     @Param('id', ParseIntPipe) id: string,

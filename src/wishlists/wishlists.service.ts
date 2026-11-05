@@ -46,8 +46,11 @@ export class WishlistsService {
     return this.findOne({ id: wishlist.id }, { owner: true, items: true });
   }
 
-  async findAll(query: FindOptionsWhere<Wishlist>) {
-    return this.wishlistRepository.findBy(query);
+  async findAll(
+    query: FindOptionsWhere<Wishlist>,
+    relations?: FindOptionsRelations<Wishlist>,
+  ) {
+    return this.wishlistRepository.find({ where: query, relations });
   }
 
   async findOne(

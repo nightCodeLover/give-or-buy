@@ -37,7 +37,7 @@ export class WishesController {
     return this.wishesService.findFirstMany({
       order: { createdAt: 'DESC' },
       take: LAST_WISHES_TO_SHOW_COUNT,
-      relations: { owner: true },
+      relations: { owner: true, offers: true },
     });
   }
 
@@ -46,7 +46,7 @@ export class WishesController {
     return this.wishesService.findFirstMany({
       order: { copied: 'DESC' },
       take: TOP_WISHES_COUNT,
-      relations: { owner: true },
+      relations: { owner: true, offers: true },
     });
   }
 

@@ -58,7 +58,7 @@ export class UsersController {
   findWishes(@Req() request: RequestWithUser) {
     const { id } = request.user;
 
-    // Запросить подарки отдельно из wishesService
+    return this.usersService.getUserWishlists({ id });
   }
 
   @Get(':username')
@@ -68,9 +68,10 @@ export class UsersController {
 
   @Get(':username/wishes')
   findWishesByUsername(@Param('username') username: string) {
-    // Запросить подарки отдельно из wishesService
+    return this.usersService.getUserWishlists({ username });
   }
 
+  @SerializeOptions({ groups: ['find'] })
   @Post('find')
   findByQuery(@Body() queryObj: FindUserDto) {
     const { query } = queryObj;

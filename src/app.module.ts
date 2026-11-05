@@ -12,9 +12,10 @@ import { User } from './users/entities/user.entity.ts';
 import { Wish } from './wishes/entities/wish.entity.ts';
 import { Wishlist } from './wishlists/entities/wishlist.entity.ts';
 import { CacheModule } from '@nestjs/cache-manager';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { HashModule } from './hash/hash.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import { APP_GUARD } from '@nestjs/core';
 
 export const CACHE_LIFE_TIME = 24 * 3600;
 const REQ_LIMIT = 100;
@@ -49,6 +50,12 @@ const TIME_FOR_REQUESTS = 10_000;
     HashModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}
