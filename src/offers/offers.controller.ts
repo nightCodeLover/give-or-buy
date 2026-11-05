@@ -32,7 +32,7 @@ export class OffersController {
   @Get()
   findAll() {
     return this.offersService.findAll({
-      relations: { user: true, item: true },
+      relations: { user: true, item: { owner: true, offers: true } },
       query: { hidden: false },
     });
   }
@@ -41,7 +41,7 @@ export class OffersController {
   findOne(@Param('id', ParseIntPipe) id: string) {
     return this.offersService.findOne({
       query: { id: Number(id), hidden: false },
-      relations: { user: true, item: true },
+      relations: { user: true, item: { owner: true, offers: true } },
     });
   }
 }

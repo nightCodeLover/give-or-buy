@@ -67,6 +67,9 @@ export class UsersService {
   async getUserWishlists(query: FindOptionsWhere<User>) {
     const user = await this.findOne(query);
 
-    return this.wishesService.findAll({ owner: { id: user.id } });
+    return this.wishesService.findAll(
+      { owner: { id: user.id } },
+      { offers: true },
+    );
   }
 }

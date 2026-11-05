@@ -37,6 +37,7 @@ export class WishlistsController {
     });
   }
 
+  @UseGuards(JwtGuard)
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: string) {
     return this.wishlistsService.findOne(

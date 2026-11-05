@@ -9,7 +9,7 @@ import {
   UpdateDateColumn,
   type Relation,
 } from 'typeorm';
-import { IsNumber, IsOptional, IsUrl, Length } from 'class-validator';
+import { IsNumber, IsPositive, IsUrl, Length } from 'class-validator';
 import { STRING_NUMBER_TRANSFORMER } from '../../utils.ts';
 import { Offer } from '../../offers/entities/offer.entity.ts';
 import { User } from '../../users/entities/user.entity.ts';
@@ -44,6 +44,7 @@ export class Wish {
     scale: 2,
     transformer: STRING_NUMBER_TRANSFORMER,
   })
+  @IsPositive()
   @IsNumber()
   price: number;
 

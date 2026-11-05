@@ -29,8 +29,11 @@ export class WishesService {
     return this.wishRepository.save(createWishDto);
   }
 
-  findAll(query: FindOptionsWhere<Wish> | FindOptionsWhere<Wish>[]) {
-    return this.wishRepository.findBy(query);
+  findAll(
+    query: FindOptionsWhere<Wish> | FindOptionsWhere<Wish>[],
+    relations?: FindOptionsRelations<Wish>,
+  ) {
+    return this.wishRepository.find({ where: query, relations: relations });
   }
 
   findFirstMany({
@@ -77,7 +80,9 @@ export class WishesService {
       throw new UpdateWishWithOfferException();
     }
 
-    return this.wishRepository.update(wish.id, updateWishDto);
+    await this.wishRepository.update(wish.id, updateWishDto);
+
+    return this.wishRepository.findOne({ where: { id: wish.id } });
   }
 
   async remove({
@@ -87,7 +92,10 @@ export class WishesService {
     currentUserId: number;
     query: FindOptionsWhere<Wish>;
   }) {
-    const wishToDelete = await this.findOne(query, { owner: true });
+    const wishToDelete = await this.findOne(query, {
+      owner: true,
+      offers: true,
+    });
 
     if (wishToDelete.owner.id !== currentUserId) {
       throw new DeleteNotOwnWishException();

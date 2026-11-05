@@ -112,7 +112,10 @@ export class WishlistsService {
     currentUser: User;
     query: FindOptionsWhere<Wishlist>;
   }) {
-    const wishToDelete = await this.findOne(query, { owner: true });
+    const wishToDelete = await this.findOne(query, {
+      owner: true,
+      items: { owner: true, offers: true },
+    });
 
     if (wishToDelete.owner.id !== currentUser.id) {
       throw new DeleteNotOwnException();

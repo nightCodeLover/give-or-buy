@@ -20,7 +20,7 @@ export class OffersService {
   }: {
     currentUser: User;
     createOfferDto: CreateOfferDto;
-  }): Promise<Offer> {
+  }): Promise<Offer | null> {
     const { itemId, amount, hidden } = createOfferDto;
 
     const wishToOffer = await this.wishesService.findOne(
@@ -37,11 +37,16 @@ export class OffersService {
       wishId: itemId,
     });
 
-    return this.offersRepository.save({
+    const offer = await this.offersRepository.save({
       item: { id: itemId },
       hidden,
       amount,
       user: currentUser,
+    });
+
+    return await this.offersRepository.findOne({
+      where: { id: offer.id },
+      relations: { user: true, item: { owner: true, offers: true } },
     });
   }
 
