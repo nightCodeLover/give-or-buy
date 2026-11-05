@@ -20,6 +20,7 @@ import type { RequestWithUser } from '../auth/types.ts';
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
+  @UseGuards(JwtGuard)
   @Get()
   findAll() {
     return this.wishlistsService.findAll({}, { owner: true, items: true });

@@ -72,6 +72,10 @@ export class WishesService {
   }) {
     const wish = await this.findOne(query, { owner: true });
 
+    if (Object.keys(updateWishDto).length === 0) {
+      return wish;
+    }
+
     if (wish.owner.id !== currentUserId) {
       throw new UpdateWishNotOwnException();
     }
