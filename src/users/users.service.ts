@@ -4,9 +4,10 @@ import { UpdateUserDto } from './dto/update-user.dto.js';
 import { User } from './entities/user.entity.ts';
 import { FindOptionsRelations, FindOptionsWhere, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserNotFoundException } from './exceptions.ts';
+import { UniqException, UserNotFoundException } from './exceptions.ts';
 import { HashService } from '../hash/hash.service.ts';
 import { WishesService } from '../wishes/wishes.service.ts';
+import { handleUniqueError } from './utils.ts';
 
 @Injectable()
 export class UsersService {
@@ -19,7 +20,12 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     const hashedPas = await this.hashService.getHash(createUserDto.password);
 
-    return this.userRepository.save({ ...createUserDto, password: hashedPas });
+    return this.userRepository
+      .save({
+        ...createUserDto,
+        password: hashedPas,
+      })
+      .catch(handleUniqueError);
   }
 
   async findMany(query: FindOptionsWhere<User> | FindOptionsWhere<User>[]) {
@@ -59,7 +65,9 @@ export class UsersService {
       return user;
     }
 
-    await this.userRepository.update(user.id, updateUserDto);
+    await this.userRepository
+      .update(user.id, updateUserDto)
+      .catch(handleUniqueError);
 
     return this.findOne(query);
   }

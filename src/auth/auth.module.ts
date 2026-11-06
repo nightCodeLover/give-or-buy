@@ -8,6 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HashModule } from '../hash/hash.module.ts';
 import { LocalStrategy } from './strategys/local-strategy.ts';
 import { JwtStrategy } from './strategys/jwt-strategy.ts';
+import { SignOptions } from 'jsonwebtoken';
 
 @Module({
   imports: [
@@ -18,6 +19,12 @@ import { JwtStrategy } from './strategys/jwt-strategy.ts';
       imports: [ConfigModule, HashModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
+        signOptions: {
+          expiresIn: configService.get<string>(
+            'JWT_TOKEN_LIVE_TIME',
+            '15m',
+          ) as SignOptions['expiresIn'],
+        },
       }),
       inject: [ConfigService],
     }),

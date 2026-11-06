@@ -16,7 +16,7 @@ import { UpdateWishlistDto } from './dto/update-wishlist.dto.js';
 import { JwtGuard } from '../auth/guards/jwt.guard.ts';
 import type { RequestWithUser } from '../auth/types.ts';
 
-@Controller('wishlistlists')
+@Controller('wishlists')
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
